@@ -10,11 +10,14 @@ This is little project for self education. Required way:
 5. Refactoring
 6. Improve code and algorithms
 
-## Required features:
+## Accomplished feaures
 - Download html page
+
+## Required features:
 - Parse html page
 - Get list of posts
 - Check new posts in the list
+- Nice cli
 - Telegram bot functional
 - Send post into Telegram channel
 - Repeatedly download page
