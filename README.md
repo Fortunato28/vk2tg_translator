@@ -9,3 +9,13 @@ This is little project for self education. Required way:
 4. Production
 5. Refactoring
 6. Improve code and algorithms
+
+## Required features:
+- Download html page
+- Parse html page
+- Get list of posts
+- Check new posts in the list
+- Telegram bot functional
+- Send post into Telegram channel
+- Repeatedly download page
+- Make send-to-telegram step depend on new posts on downloaded page
