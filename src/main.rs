@@ -1,3 +1,5 @@
+use vk2tg_translator as v2t;
+
 fn main() {
-    println!("Hello, world!");
+    let a = v2t::Page::new("https://vk.com/appi.retelling");
 }
