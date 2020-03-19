@@ -1,3 +1,4 @@
+use std::fs;
 use std::io::Read;
 
 pub struct Page {
@@ -13,7 +14,7 @@ impl Page {
     pub fn new(url: &str) -> Page {
         let url = url.to_owned();
         let data = Self::download_page(&url);
-        let posts = Self::get_all_posts();
+        let posts = Self::get_all_posts(&data);
         Page { url, data, posts }
     }
 
@@ -26,11 +27,15 @@ impl Page {
         body
     }
 
-    fn get_all_posts() -> Vec<Post> {
+    fn get_all_posts(page: &str) -> Vec<Post> {
         Vec::new()
     }
 
     fn get_list_of_posts() -> Vec<String> {
         Vec::new()
     }
+}
+
+fn find_start_at(slice: &str, at: usize, pattern: &str) -> Option<usize> {
+    slice[at + 1..].find(pattern).map(|i| at + i)
 }
