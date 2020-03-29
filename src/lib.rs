@@ -47,9 +47,22 @@ impl Page {
             Selector::parse(r#"div[class="pi_text"]"#).expect("Error while parse selector!");
         let first_post = parsed_html
             .select(&post_selector)
+            .skip(1)
             .next()
             .expect("Error while getting the first post!");
-        dbg!(first_post);
+
+        //dbg!(first_post.inner_html());
+
+        let link_selector = Selector::parse(r#"a"#).expect("Error while parse link selector");
+        let part = first_post
+            .select(&link_selector)
+            .skip(1)
+            .next()
+            .expect("Error while getting link");
+        dbg!(part.inner_html());
+
+        let link = part.value().attr("href");
+        dbg!(link);
     }
 
     fn get_all_posts(page: &str) -> Vec<Post> {
