@@ -8,18 +8,34 @@ pub struct Page {
     url: String,
     // TODO maybe there are no reason to store that
     data: String,
-    posts: Vec<Post>,
+    posts: Vec<LinkOnPost>,
 }
 
-struct Post {}
+#[derive(Debug)]
+struct LinkOnPost {
+    url: String,
+}
+
+impl LinkOnPost {
+    pub fn new(page_url: String, tail: String) -> LinkOnPost {
+        let url = page_url + "?w=" + &tail[1..];
+        LinkOnPost { url }
+    }
+}
+
+struct NewPost {
+    url: String,
+    pictures: Vec<String>,
+    text: String,
+    title: String,
+}
 
 impl Page {
     pub fn new(url: &str) -> Page {
         let url = url.to_owned();
         let data = Self::download_page(&url);
         let document = Html::parse_document(&data);
-        Self::test_output(document);
-        let posts = Self::get_all_posts(&data);
+        let posts = Self::get_all_posts(document, &url);
         Page { url, data, posts }
     }
 
@@ -42,38 +58,37 @@ impl Page {
         body
     }
 
-    fn test_output(parsed_html: scraper::Html) {
+    fn get_all_posts(parsed_html: scraper::Html, page_url: &str) -> Vec<LinkOnPost> {
+        // Reach posts on page
         let post_selector =
-            Selector::parse(r#"div[class="pi_text"]"#).expect("Error while parse selector!");
-        let first_post = parsed_html
-            .select(&post_selector)
-            .skip(1)
-            .next()
-            .expect("Error while getting the first post!");
+            Selector::parse(r#"div[class="pi_text"]"#).expect("Error while pi_text selector!");
+        let posts = parsed_html.select(&post_selector).skip(1);
 
-        //dbg!(first_post.inner_html());
+        // TODO refactoring it to the for_each()
+        let mut links_on_posts = Vec::new();
+        for post in posts {
+            // Reach post data
+            let link_selector = Selector::parse(r#"a"#).expect("Error while parse link selector");
+            // TODO title here if whithout skip()
+            let post_meta_info = post
+                .select(&link_selector)
+                .skip(1)
+                .next()
+                .expect("Error while getting post`s meta information");
 
-        let link_selector = Selector::parse(r#"a"#).expect("Error while parse link selector");
-        let part = first_post
-            .select(&link_selector)
-            .skip(1)
-            .next()
-            .expect("Error while getting link");
-        dbg!(part.inner_html());
+            // Get Link
+            let link = post_meta_info
+                .value()
+                .attr("href")
+                .expect("Error while gettin link attribute");
+            let result_link = LinkOnPost::new(page_url.to_string(), link.to_string());
+            links_on_posts.push(result_link);
+        }
 
-        let link = part.value().attr("href");
-        dbg!(link);
-    }
-
-    fn get_all_posts(page: &str) -> Vec<Post> {
-        Vec::new()
+        links_on_posts
     }
 
     fn get_list_of_posts() -> Vec<String> {
         Vec::new()
     }
-}
-
-fn find_start_at(slice: &str, at: usize, pattern: &str) -> Option<usize> {
-    slice[at + 1..].find(pattern).map(|i| at + i)
 }

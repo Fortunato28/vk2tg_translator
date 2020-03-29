@@ -12,10 +12,10 @@ This is little project for self education. Required way:
 
 ## Accomplished feaures
 - Download html page
-
-## Required features:
 - Parse html page
 - Get list of posts
+
+## Required features:
 - Check new posts in the list
 - Nice cli
 - Telegram bot functional
