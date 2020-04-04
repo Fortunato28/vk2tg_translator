@@ -114,7 +114,13 @@ pub fn get_old_posts(url_storage: &str) -> Vec<String> {
 }
 
 pub fn check_new_posts(page_posts: Vec<String>, old_posts: Vec<String>) -> Vec<String> {
-    dbg!(&page_posts);
-    dbg!(&old_posts);
-    vec![]
+    let mut new_posts: Vec<String> = Vec::new();
+    // TODO rewrite it to the iterators
+    for page_post in &page_posts {
+        if !old_posts.contains(page_post) {
+            new_posts.push(page_post.to_owned())
+        }
+    }
+
+    new_posts
 }
