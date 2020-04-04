@@ -1,6 +1,8 @@
 use scraper::Html;
 use scraper::Selector;
 use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
 use std::io::Read;
 use std::path::Path;
 
@@ -18,6 +20,10 @@ impl LinkOnPost {
     pub fn new(page_url: String, tail: String) -> LinkOnPost {
         let url = page_url + "?w=" + &tail[1..];
         LinkOnPost { url }
+    }
+
+    pub fn get_string(&self) -> &str {
+        &self.url
     }
 }
 
@@ -84,19 +90,31 @@ impl Page {
             links_on_posts.push(result_link);
         }
 
-        dbg!(&links_on_posts);
         links_on_posts
     }
 
-    fn get_list_of_posts() -> Vec<String> {
-        Vec::new()
+    pub fn get_posts(&self) -> Vec<String> {
+        let mut result_posts = Vec::new();
+        for link_on_post in &self.posts {
+            result_posts.push(link_on_post.get_string().to_owned())
+        }
+        result_posts
     }
 }
 
-pub fn get_old_posts() -> Vec<String> {
-    vec![]
+pub fn get_old_posts(url_storage: &str) -> Vec<String> {
+    let file = File::open(url_storage).expect("Error while open url storage");
+    let buf_reader = BufReader::new(&file);
+    let mut posts_from_file = Vec::new();
+    for line in buf_reader.lines() {
+        posts_from_file.push(line.expect("Problem while read string"));
+    }
+
+    posts_from_file
 }
 
-pub fn check_new_posts(page: Page, old_posts: Vec<String>) -> Vec<String> {
+pub fn check_new_posts(page_posts: Vec<String>, old_posts: Vec<String>) -> Vec<String> {
+    dbg!(&page_posts);
+    dbg!(&old_posts);
     vec![]
 }
