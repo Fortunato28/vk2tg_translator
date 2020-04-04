@@ -14,11 +14,12 @@ This is little project for self education. Required way:
 - Download html page
 - Parse html page
 - Get list of posts
+- Check new posts in the list
 
 ## Required features:
-- Check new posts in the list
 - Nice cli
 - Telegram bot functional
 - Send post into Telegram channel
+- Expand posts data and information
 - Repeatedly download page
 - Make send-to-telegram step depend on new posts on downloaded page

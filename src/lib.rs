@@ -8,6 +8,8 @@ use std::path::Path;
 
 pub struct Page {
     url: String,
+    // TODO maybe store here Html::document will be better and easy parsing later
+    data: String,
     posts: Vec<LinkOnPost>,
 }
 
@@ -40,7 +42,7 @@ impl Page {
         let data = Self::download_page(&url);
         let document = Html::parse_document(&data);
         let posts = Self::get_all_posts(document, &url);
-        Page { url, posts }
+        Page { url, data, posts }
     }
 
     fn download_page(url: &str) -> String {
