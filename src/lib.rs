@@ -6,8 +6,6 @@ use std::path::Path;
 
 pub struct Page {
     url: String,
-    // TODO maybe there are no reason to store that
-    data: String,
     posts: Vec<LinkOnPost>,
 }
 
@@ -36,10 +34,11 @@ impl Page {
         let data = Self::download_page(&url);
         let document = Html::parse_document(&data);
         let posts = Self::get_all_posts(document, &url);
-        Page { url, data, posts }
+        Page { url, posts }
     }
 
     fn download_page(url: &str) -> String {
+        // TODO this shit only for testing
         if Path::new("retelling.txt").exists() {
             let mut file = File::open("retelling.txt").unwrap();
             let mut buffer = String::new();
@@ -85,10 +84,19 @@ impl Page {
             links_on_posts.push(result_link);
         }
 
+        dbg!(&links_on_posts);
         links_on_posts
     }
 
     fn get_list_of_posts() -> Vec<String> {
         Vec::new()
     }
+}
+
+pub fn get_old_posts() -> Vec<String> {
+    vec![]
+}
+
+pub fn check_new_posts(page: Page, old_posts: Vec<String>) -> Vec<String> {
+    vec![]
 }
