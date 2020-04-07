@@ -11,13 +11,13 @@ This is little project for self education. Required way:
 6. Improve code and algorithms
 
 ## Required features:
-[x] Download html page
-[x] Parse html page
-[x] Get list of posts
-[x] Check new posts in the list
-[ ] Send post into Telegram channel
-[ ] Telegram bot functional
-[ ] Nice cli
-[ ] Repeatedly download page
-[ ] Expand posts data and information
-[ ] Make send-to-telegram step depend on new posts on downloaded page
+- [x] Download html page
+- [x] Parse html page
+- [x] Get list of posts
+- [x] Check new posts in the list
+- [ ] Send post into Telegram channel
+- [ ] Telegram bot functional
+- [ ] Nice cli
+- [ ] Repeatedly download page
+- [ ] Expand posts data and information
+- [ ] Make send-to-telegram step depend on new posts on downloaded page
