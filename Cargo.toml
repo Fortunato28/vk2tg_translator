@@ -9,3 +9,8 @@ edition = "2018"
 [dependencies]
 reqwest = {version="0.10.1", features=["blocking"]}
 scraper = "0.11.0"
+log = "0.4.8"
+tokio = "0.2.9"
+pretty_env_logger = "0.4.0"
+parse-display = "0.1.1"
+teloxide = "0.2.0"

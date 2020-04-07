@@ -15,9 +15,10 @@ This is little project for self education. Required way:
 - [x] Parse html page
 - [x] Get list of posts
 - [x] Check new posts in the list
-- [ ] Send post into Telegram channel
-- [ ] Telegram bot functional
-- [ ] Nice cli
+- [x] Send post into Telegram channel
+- [x] Telegram bot functional
 - [ ] Repeatedly download page
+- [ ] Extract all hardcoded strings to cli
+- [ ] Nice cli
 - [ ] Expand posts data and information
 - [ ] Make send-to-telegram step depend on new posts on downloaded page
