@@ -10,16 +10,14 @@ This is little project for self education. Required way:
 5. Refactoring
 6. Improve code and algorithms
 
-## Accomplished feaures
-- Download html page
-- Parse html page
-- Get list of posts
-- Check new posts in the list
-
 ## Required features:
-- Nice cli
-- Telegram bot functional
-- Send post into Telegram channel
-- Expand posts data and information
-- Repeatedly download page
-- Make send-to-telegram step depend on new posts on downloaded page
+[x] Download html page
+[x] Parse html page
+[x] Get list of posts
+[x] Check new posts in the list
+[ ] Send post into Telegram channel
+[ ] Telegram bot functional
+[ ] Nice cli
+[ ] Repeatedly download page
+[ ] Expand posts data and information
+[ ] Make send-to-telegram step depend on new posts on downloaded page

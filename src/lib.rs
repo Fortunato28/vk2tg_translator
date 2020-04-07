@@ -29,7 +29,8 @@ impl LinkOnPost {
     }
 }
 
-struct NewPost {
+// TODO Well, maybe that will be usefull when I decided to send on the telegram channel data, not links
+pub struct NewPost {
     url: String,
     pictures: Vec<String>,
     text: String,
@@ -43,6 +44,20 @@ impl Page {
         let document = Html::parse_document(&data);
         let posts = Self::get_all_posts(document, &url);
         Page { url, data, posts }
+    }
+
+    pub fn get_post_data(link: &str) -> NewPost {
+        let url = link.to_owned();
+        let pictures = vec!["S".to_owned()];
+        let text = "Some text".to_owned();
+        let title = "Some title".to_owned();
+
+        NewPost {
+            url,
+            pictures,
+            text,
+            title,
+        }
     }
 
     fn download_page(url: &str) -> String {
