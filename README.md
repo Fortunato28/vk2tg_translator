@@ -17,7 +17,8 @@ This is little project for self education. Required way:
 - [x] Check new posts in the list
 - [x] Send post into Telegram channel
 - [x] Telegram bot functional
-- [ ] Save old posts to the storage
+- [x] Save new posts to the storage
+- [ ] If post exist in the storage but not on the page - it is old post, remove it
 - [ ] Repeatedly download page
 - [ ] Extract all hardcoded strings to cli
 - [ ] Nice cli

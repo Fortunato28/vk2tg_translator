@@ -1,6 +1,8 @@
 use scraper::Html;
 use scraper::Selector;
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
@@ -140,4 +142,17 @@ pub fn check_new_posts(page_posts: Vec<String>, old_posts: Vec<String>) -> Vec<S
     }
 
     new_posts
+}
+
+pub fn consume_new_posts(new_posts: Vec<String>, storage: &str) {
+    let mut file_storage = OpenOptions::new()
+        .append(true)
+        .open(storage)
+        .expect("Problem while open storage for appending");
+
+    for post in new_posts.iter() {
+        if let Err(e) = writeln!(file_storage, "{}", post) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
+    }
 }
