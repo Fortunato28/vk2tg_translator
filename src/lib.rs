@@ -62,6 +62,13 @@ impl Page {
         }
     }
 
+    pub fn get_posts(&self) -> Vec<String> {
+        self.posts
+            .iter()
+            .map(|post| post.get_string().to_owned())
+            .collect()
+    }
+
     fn download_page(url: &str) -> String {
         // TODO this shit only for testing
         if Path::new("retelling.txt").exists() {
@@ -111,18 +118,10 @@ impl Page {
 
         links_on_posts
     }
-
-    pub fn get_posts(&self) -> Vec<String> {
-        let mut result_posts = Vec::new();
-        for link_on_post in &self.posts {
-            result_posts.push(link_on_post.get_string().to_owned())
-        }
-        result_posts
-    }
 }
 
-pub fn get_old_posts(url_storage: &str) -> Vec<String> {
-    let file = File::open(url_storage).expect("Error while open url storage");
+pub fn get_old_posts(storage: &str) -> Vec<String> {
+    let file = File::open(storage).expect("Error while open url storage");
     let buf_reader = BufReader::new(&file);
     let mut posts_from_file = Vec::new();
     for line in buf_reader.lines() {
@@ -155,4 +154,37 @@ pub fn consume_new_posts(new_posts: Vec<String>, storage: &str) {
             eprintln!("Couldn't write to file: {}", e);
         }
     }
+}
+
+// TODO get vec and vec -> easy to test
+pub fn remove_old_posts(page_posts: Vec<String>, storage: &str) {
+    let file = File::open(storage).expect("Error while open url storage");
+    let buf_reader = BufReader::new(&file);
+    let mut posts_from_file = Vec::new();
+    for line in buf_reader.lines() {
+        posts_from_file.push(line.expect("Problem while read string"));
+    }
+
+    let mut result_urls_to_store = Vec::new();
+    for post_from_file in posts_from_file {
+        if page_posts.contains(&post_from_file) {
+            result_urls_to_store.push(post_from_file);
+        }
+    }
+
+    //// Remove all data from file
+    //file.set_len(0).expect("Error while remove file data");
+    drop(file);
+
+    let mut file_storage = OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .open(storage)
+        .expect("Problem while open storage for appending");
+    dbg!(&result_urls_to_store);
+
+    result_urls_to_store.iter().for_each(|line| {
+        writeln!(file_storage, "{}", line).expect("Problem while write line in storage");
+        ()
+    });
 }

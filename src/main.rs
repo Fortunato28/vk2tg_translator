@@ -11,7 +11,7 @@ async fn main() {
 async fn run() {
 
     // TODO Has to be in cli parameters
-    let storage = "url_storage.txt";
+    let storage = "test_url_storage.txt";
 
     teloxide::enable_logging!();
     log::info!("Starting vk2tg_translator_bot!");
@@ -26,4 +26,5 @@ async fn run() {
     }
 
     v2t::consume_new_posts(new_posts, storage);
+    v2t::remove_old_posts(page.get_posts(), storage);
 }
