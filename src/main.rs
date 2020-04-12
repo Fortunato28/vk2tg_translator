@@ -1,9 +1,25 @@
 use vk2tg_translator as v2t;
 use teloxide::prelude::*;
 use teloxide::types;
+use clap::{Arg, App};
 
 #[tokio::main]
 async fn main() {
+    //let cli = App::new("Translator from vkontakte group to telegram channel")
+    //    .version("0.1.0")
+    //    .author("Sapunov Anton <fort.sav.28@gmail.com")
+    //    .args_from_usage(
+    //        "
+    //        -f, --from=[link] 'Link to some group in vk'
+    //        -t, --to 'Telegram channel name'
+    //        -s, --storage 'Filename for storing already published post'
+    //        "
+    //    )
+    //    .get_matches();
+
+    //let source_vk_group = cli.value_of("from").expect("No required [from] parameter");
+    //dbg!(&source_vk_group);
+
     run().await;
 }
 
@@ -16,7 +32,7 @@ async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting vk2tg_translator_bot!");
 
-    let page = v2t::Page::new("https://vk.com/appi.retelling");
+    let page = v2t::Page::new("https://vk.com/appi.retelling").await;
     let new_posts = v2t::check_new_posts(page.get_posts(), v2t::get_old_posts(storage));
 
     let bot = Bot::from_env();

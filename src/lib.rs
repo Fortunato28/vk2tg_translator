@@ -40,9 +40,9 @@ pub struct NewPost {
 }
 
 impl Page {
-    pub fn new(url: &str) -> Page {
+    pub async fn new(url: &str) -> Page {
         let url = url.to_owned();
-        let data = Self::download_page(&url);
+        let data = Self::download_page(&url).await;
         let document = Html::parse_document(&data);
         let posts = Self::get_all_posts(document, &url);
         Page { url, data, posts }
@@ -69,7 +69,7 @@ impl Page {
             .collect()
     }
 
-    fn download_page(url: &str) -> String {
+    async fn download_page(url: &str) -> String {
         // TODO this shit only for testing
         if Path::new("retelling.txt").exists() {
             let mut file = File::open("retelling.txt").unwrap();
@@ -81,12 +81,9 @@ impl Page {
         }
 
         // If there are no needed file let`s download it
-        let mut res = reqwest::blocking::get(url).expect("Cannot perform get reqwest.");
-        let mut body = String::new();
-        res.read_to_string(&mut body)
-            .expect("Problem while read response to string");
+        let res = reqwest::get(url).await.expect("Cannot perform get reqwest.").text().await.expect("Cannot get request`s body");
 
-        body
+        res
     }
 
     fn get_all_posts(parsed_html: scraper::Html, page_url: &str) -> Vec<LinkOnPost> {
@@ -172,8 +169,6 @@ pub fn remove_old_posts(page_posts: Vec<String>, storage: &str) {
         }
     }
 
-    //// Remove all data from file
-    //file.set_len(0).expect("Error while remove file data");
     drop(file);
 
     let mut file_storage = OpenOptions::new()
@@ -181,7 +176,6 @@ pub fn remove_old_posts(page_posts: Vec<String>, storage: &str) {
         .write(true)
         .open(storage)
         .expect("Problem while open storage for appending");
-    dbg!(&result_urls_to_store);
 
     result_urls_to_store.iter().for_each(|line| {
         writeln!(file_storage, "{}", line).expect("Problem while write line in storage");
