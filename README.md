@@ -21,6 +21,6 @@ This is little project for self education. Required way:
 - [x] Remove old urls from url storage
 - [x] Extract all hardcoded strings to cli
 - [x] Nice cli
-- [ ] Repeatedly download page
+- [x] Repeatedly download page
+- [x] Make send-to-telegram step depend on new posts on downloaded page
 - [ ] Expand posts data and information
-- [ ] Make send-to-telegram step depend on new posts on downloaded page

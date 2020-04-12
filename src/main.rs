@@ -2,6 +2,7 @@ use vk2tg_translator as v2t;
 use teloxide::prelude::*;
 use teloxide::types;
 use clap::{Arg, App};
+use std::{thread, time};
 
 #[tokio::main]
 async fn main() {
@@ -21,7 +22,11 @@ async fn main() {
     let target_channel = cli.value_of("to").expect("No required [to] parameter");
     let storage = cli.value_of("storage").unwrap_or("test_url_storage.txt");
 
-    run(source_vk_group, target_channel, storage).await;
+    loop {
+        run(source_vk_group, target_channel, storage).await;
+
+        thread::sleep(time::Duration::from_secs(3600));
+    }
 }
 
 
