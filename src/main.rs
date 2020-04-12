@@ -21,29 +21,22 @@ async fn main() {
     let target_channel = cli.value_of("to").expect("No required [to] parameter");
     let storage = cli.value_of("storage").unwrap_or("test_url_storage.txt");
 
-    dbg!(&source_vk_group);
-    dbg!(&target_channel);
-    dbg!(&storage);
-
-    run().await;
+    run(source_vk_group, target_channel, storage).await;
 }
 
 
-async fn run() {
-
-    // TODO Has to be in cli parameters
-    let storage = "test_url_storage.txt";
+async fn run(source: &str, target_channel: &str, storage: &str) {
 
     teloxide::enable_logging!();
     log::info!("Starting vk2tg_translator_bot!");
 
-    let page = v2t::Page::new("https://vk.com/appi.retelling").await;
+    let page = v2t::Page::new(source).await;
     let new_posts = v2t::check_new_posts(page.get_posts(), v2t::get_old_posts(storage));
 
     let bot = Bot::from_env();
 
     for x in new_posts.iter() {
-        bot.send_message(types::ChatId::ChannelUsername("@vk2tg_test_channel".to_owned()), x).send().await.log_on_error().await;
+        bot.send_message(types::ChatId::ChannelUsername(target_channel.to_owned()), x).send().await.log_on_error().await;
     }
 
     v2t::consume_new_posts(new_posts, storage);
