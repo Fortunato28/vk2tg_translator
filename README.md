@@ -19,8 +19,8 @@ This is little project for self education. Required way:
 - [x] Telegram bot functional
 - [x] Save new posts to the storage
 - [x] Remove old urls from url storage
+- [x] Extract all hardcoded strings to cli
+- [x] Nice cli
 - [ ] Repeatedly download page
-- [ ] Extract all hardcoded strings to cli
-- [ ] Nice cli
 - [ ] Expand posts data and information
 - [ ] Make send-to-telegram step depend on new posts on downloaded page
