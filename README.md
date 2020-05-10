@@ -8,19 +8,11 @@ This is little project for self education. Required way:
 3. Minimum viable product
 4. Production
 5. Refactoring
-6. Improve code and algorithms
+6. Improve code and algorithms <- using vk long-polling API
 
 ## Required features:
-- [x] Download html page
-- [x] Parse html page
-- [x] Get list of posts
-- [x] Check new posts in the list
-- [x] Send post into Telegram channel
-- [x] Telegram bot functional
-- [x] Save new posts to the storage
-- [x] Remove old urls from url storage
-- [x] Extract all hardcoded strings to cli
-- [x] Nice cli
-- [x] Repeatedly download page
-- [x] Make send-to-telegram step depend on new posts on downloaded page
+- [ ] Capture vk_token from console environment
+- [ ] Send prepare request
+- [ ] Send long-polling request
+- [ ] Telegram bot functional
 - [ ] Expand posts data and information

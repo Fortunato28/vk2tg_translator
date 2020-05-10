@@ -1,8 +1,8 @@
-use vk2tg_translator as v2t;
+use clap::{App, Arg};
+use std::{thread, time};
 use teloxide::prelude::*;
 use teloxide::types;
-use clap::{Arg, App};
-use std::{thread, time};
+use vk2tg_translator as v2t;
 
 #[tokio::main]
 async fn main() {
@@ -14,7 +14,7 @@ async fn main() {
             -f, --from=[link] 'Link to some group in vk'
             -t, --to=[channel name] 'Telegram channel name'
             -s, --storage[storage filename] 'Filename for storing already published post'
-            "
+            ",
         )
         .get_matches();
 
@@ -22,26 +22,29 @@ async fn main() {
     let target_channel = cli.value_of("to").expect("No required [to] parameter");
     let storage = cli.value_of("storage").unwrap_or("test_url_storage.txt");
 
-    loop {
-        run(source_vk_group, target_channel, storage).await;
-
-        thread::sleep(time::Duration::from_secs(3600));
-    }
-}
-
-
-async fn run(source: &str, target_channel: &str, storage: &str) {
-
     teloxide::enable_logging!();
     log::info!("Starting vk2tg_translator_bot!");
 
+    loop {
+        dbg!(&"New hour, new iteration!");
+        run(source_vk_group, target_channel, storage).await;
+
+        thread::sleep(time::Duration::from_secs(600));
+    }
+}
+
+async fn run(source: &str, target_channel: &str, storage: &str) {
     let page = v2t::Page::new(source).await;
     let new_posts = v2t::check_new_posts(page.get_posts(), v2t::get_old_posts(storage));
 
     let bot = Bot::from_env();
 
     for x in new_posts.iter().rev() {
-        bot.send_message(types::ChatId::ChannelUsername(target_channel.to_owned()), x).send().await.log_on_error().await;
+        bot.send_message(types::ChatId::ChannelUsername(target_channel.to_owned()), x)
+            .send()
+            .await
+            .log_on_error()
+            .await;
     }
 
     v2t::consume_new_posts(new_posts, storage);
