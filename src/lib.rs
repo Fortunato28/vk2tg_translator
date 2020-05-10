@@ -7,6 +7,26 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::path::Path;
+use teloxide::prelude::*;
+use teloxide::types;
+
+pub async fn run(source: &str, target_channel: &str, storage: &str) {
+    let page = Page::new(source).await;
+    let new_posts = check_new_posts(page.get_posts(), get_old_posts(storage));
+
+    let bot = Bot::from_env();
+
+    for x in new_posts.iter().rev() {
+        bot.send_message(types::ChatId::ChannelUsername(target_channel.to_owned()), x)
+            .send()
+            .await
+            .log_on_error()
+            .await;
+    }
+
+    consume_new_posts(new_posts, storage);
+    remove_old_posts(page.get_posts(), storage);
+}
 
 pub struct Page {
     url: String,
@@ -81,7 +101,12 @@ impl Page {
         }
 
         // If there are no needed file let`s download it
-        let res = reqwest::get(url).await.expect("Cannot perform get reqwest.").text().await.expect("Cannot get request`s body");
+        let res = reqwest::get(url)
+            .await
+            .expect("Cannot perform get reqwest.")
+            .text()
+            .await
+            .expect("Cannot get request`s body");
 
         res
     }
