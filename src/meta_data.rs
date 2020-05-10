@@ -5,9 +5,9 @@ use crate::group_data;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MetaData {
-    key: String,
-    server: String,
-    ts: String,
+    pub key: String,
+    pub server: String,
+    pub ts: String,
 }
 
 pub async fn get_meta_data(group: &group_data::Group) -> Result<MetaData> {
