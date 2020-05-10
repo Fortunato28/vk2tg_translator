@@ -23,9 +23,14 @@ async fn main() {
     //teloxide::enable_logging!();
     //log::info!("Starting vk2tg_translator_bot!");
 
+    let source = "https://vk.com/club192827874";
+    let target_channel = "@vk2tg_test_channel";
+    // TODO Has to be connected with group id
+    let storage = "last_id_test";
+
     loop {
         dbg!(&"New hour, new iteration!");
-        v2t::run("source_vk_group", "target_channel", "test").await;
+        v2t::run(source, target_channel, storage).await;
 
         thread::sleep(time::Duration::from_secs(600));
     }
