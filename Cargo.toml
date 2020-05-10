@@ -16,3 +16,5 @@ parse-display = "0.1.1"
 teloxide = "0.2.0"
 clap = "2.26.0"
 anyhow = "1.0.28"
+serde_json = "1.0.48"
+serde = { version = "1.0.104", features = ["derive"]  }
