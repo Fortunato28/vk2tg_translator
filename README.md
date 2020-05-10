@@ -11,7 +11,7 @@ This is little project for self education. Required way:
 6. Improve code and algorithms <- using vk long-polling API
 
 ## Required features:
-- [ ] Capture vk_token from console environment
+- [x] Capture vk_token from console environment
 - [ ] Send prepare request
 - [ ] Send long-polling request
 - [ ] Telegram bot functional
