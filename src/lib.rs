@@ -2,13 +2,13 @@ use teloxide::prelude::*;
 use teloxide::types;
 
 mod group_data;
-mod long_polling_meta_data;
+mod meta_data;
 
 pub async fn run(source: &str, target_channel: &str, storage: &str) {
     //let new_posts = vec!["str1".to_owned(), "str2".to_owned()];
     let group = group_data::Group::new(source);
-    let meta_data = long_polling_meta_data::get_meta_data(&group).await;
-    dbg!(&meta_data);
+    let meta_data = meta_data::get_meta_data(&group).await.unwrap();
+    let new_post = perform_lp_request(meta_data).await;
 
     //let bot = Bot::from_env();
 
@@ -19,4 +19,9 @@ pub async fn run(source: &str, target_channel: &str, storage: &str) {
     //        .log_on_error()
     //        .await;
     //}
+}
+
+async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
+    dbg!(&meta_data);
+    String::new()
 }
