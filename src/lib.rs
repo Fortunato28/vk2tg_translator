@@ -24,13 +24,13 @@ pub async fn run(source: &str, target_channel: &str, storage: &str) {
 async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
     dbg!(&meta_data);
 
-    let request = r#"https://lp.vk.com/wh192827874\?act\=a_check\&key\="#;
+    let request = r#"https://lp.vk.com/wh192827874?act=a_check&key="#;
 
     let result_request = format!(
         "{}{}&wait=30&mode=2&ts={}",
         request,
         meta_data.key,
-        8 //meta_data.ts
+        10 //meta_data.ts
     );
 
     println!("{}", &result_request);
