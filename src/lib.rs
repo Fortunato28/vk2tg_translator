@@ -1,15 +1,15 @@
-use serde_json::Value;
 use teloxide::prelude::*;
 use teloxide::types;
 
 mod group_data;
+mod lp_response;
 mod meta_data;
 
 pub async fn run(source: &str, target_channel: &str, storage: &str) {
     //let new_posts = vec!["str1".to_owned(), "str2".to_owned()];
     let group = group_data::Group::new(source);
     let meta_data = meta_data::get_meta_data(&group).await.unwrap();
-    let new_post = perform_lp_request(meta_data).await;
+    let new_posts = perform_lp_request(meta_data).await;
 
     //let bot = Bot::from_env();
 
@@ -41,7 +41,6 @@ async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
         .unwrap();
 
     println!("{}", &res);
-    let test_json: Value = serde_json::from_str(&res).unwrap();
-    let ts = test_json.get("ts");
+    let (ts, posts) = lp_response::parse_response(&res).unwrap();
     String::new()
 }
