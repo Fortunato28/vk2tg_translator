@@ -1,3 +1,4 @@
+use serde_json::Value;
 use teloxide::prelude::*;
 use teloxide::types;
 
@@ -28,9 +29,7 @@ async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
 
     let result_request = format!(
         "{}{}&wait=30&mode=2&ts={}",
-        request,
-        meta_data.key,
-        10 //meta_data.ts
+        request, meta_data.key, meta_data.ts
     );
 
     println!("{}", &result_request);
@@ -41,6 +40,8 @@ async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
         .await
         .unwrap();
 
-    dbg!(&res);
+    println!("{}", &res);
+    let test_json: Value = serde_json::from_str(&res).unwrap();
+    let ts = test_json.get("ts");
     String::new()
 }
