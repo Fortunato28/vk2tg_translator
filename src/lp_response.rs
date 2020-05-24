@@ -59,6 +59,14 @@ pub fn parse_response(response: &str) -> Result<Response> {
         return Ok(Response::Ok(parsed_response));
     }
 
+    let object = updates[0]
+        .get("object")
+        .context("No object field in update")?;
+
+    let id = object.get("id").context("No id field in object")?;
+    let text = object.get("text").context("No text field in object")?;
+
+    dbg!(&text);
     Ok(Response::Ok(parsed_response))
 }
 
@@ -89,57 +97,109 @@ mod tests {
 
     #[test]
     fn get_update() {
-        let test_response = r#"{
-    "ts":"16",
-    "updates":
-    [
+        let test_response = r#"
         {
-            "type":"wall_post_new",
-            "object":
-            {
-                "id":16,
-                "from_id":69751141,
-                "owner_id":-192827874,
-                "date":1589992602,
-                "marked_as_ads":0,
-                "post_type":"post",
-                "text":"fvdfvd",
-                "can_edit":1,
-                "created_by":69751141,
-                "can_delete":1,
-                "attachments":
-                [
-                    {
-                        "type":"photo",
-                        "photo":
-                        {
-                            "id":457239019,
-                            "album_id":-8,
-                            "owner_id":-192827874,
-                            "user_id":100,
-                            "photo_75":"https:\/\/sun1-97.userapi.com\/-jvQYpQNCxoUuc7dsIHzKoSQUYXMml3nX6IbsA\/mpvsDR8NaPA.jpg",
-                            "photo_130":"https:\/\/sun1-89.userapi.com\/DwIt8XcKO5bdFH2a56dP9w7ApdLUZsxqi5kgXw\/q1dbkQ3MaBo.jpg",
-                            "photo_604":"https:\/\/sun1-92.userapi.com\/JMKB28PJw50fsCLfDkjq6Tijn7BI2ar3tz2xgw\/AQiQEFRT5ps.jpg",
-                            "photo_807":"https:\/\/sun1-20.userapi.com\/hZpdOxh1eH3bWQsGluhGdjBH_aVs8fAB2vH-aA\/mKLKpumhFVQ.jpg",
-                            "width":700,
-                            "height":488,
-                            "text":"",
-                            "date":1589992602,
-                            "post_id":16,
-                            "access_key":"71882b9b66a35769aa"
-                        }
-                    }
-                ],
-                "comments":
-                {
-                    "count":0
-                }
-            },
-            "group_id":192827874,
-            "event_id":"43e633c025f3aae41d90f1ef5d2cbb4aaaf719b0"
+            "ts":"27",
+            "updates":
+            [
+               {
+                   "type":"wall_post_new",
+                   "object":
+                   {
+                       "id":26,
+                       "from_id":69751141,
+                       "owner_id":-192827874,
+                       "date":1590342624,
+                       "marked_as_ads":0,
+                       "post_type":"post",
+                       "text":"ак сложилось,",
+                       "can_edit":1,
+                       "created_by":69751141,
+                       "can_delete":1,
+                       "attachments":
+                       [
+                           {
+                               "type":"photo",
+                               "photo":
+                               {
+                                   "album_id":-8,
+                                   "date":1590342624,
+                                   "id":457239021,
+                                   "owner_id":-192827874,
+                                   "has_tags":false,
+                                   "access_key":"204c3192e9a01342f3",
+                                   "height":1080,
+                                   "photo_1280":"https:\/\/sun1-95.userapi.com\/v5o9r-xfYt7K4SkkXf0atWLu_KvpCOwvffLKZg\/ozDaMS4IWjw.jpg",
+                                   "photo_130":"https:\/\/sun1-83.userapi.com\/i-EhbtR2MrF_vWTXNQH5QNuSiCFiolIdP-xxOw\/v7q0Wu3au9c.jpg",
+                                   "photo_604":"https:\/\/sun1-92.userapi.com\/k8yr1IMsRDFcN_2VgKO1HGG5N3vrlJrC_kw6gw\/3z1uYQk70uU.jpg",
+                                   "photo_75":"https:\/\/sun1-94.userapi.com\/DzCGFHkmJJ-cwKO9UvvHTmdwfp4A-NC9evu05w\/LoY1fAHuTPw.jpg",
+                                   "photo_807":"https:\/\/sun1-21.userapi.com\/uQeCuz0_tZrvx1wx3nMBmWdKBg1mYJzrOaBFRw\/9Q9SBpsB_dM.jpg",
+                                   "post_id":26,
+                                   "text":"",
+                                   "user_id":100,
+                                   "width":1080
+                               }
+                           }
+                       ],
+                       "comments":
+                       {
+                           "count":0
+                       }
+                   },
+                   "group_id":192827874,
+                   "event_id":"b99ca8705ee2387e7e685b8868a32a9d2a8a05c5"
+               },
+               {
+                   "type":"wall_post_new",
+                   "object":
+                   {
+                       "id":27,
+                       "from_id":69751141,
+                       "owner_id":-192827874,
+                       "date":1590342681,
+                       "marked_as_ads":0,
+                       "post_type":"post",
+                       "text":"аки шало",
+                       "can_edit":1,
+                       "created_by":69751141,
+                       "can_delete":1,
+                       "attachments":
+                       [
+                           {
+                               "type":"photo",
+                               "photo":
+                               {
+                                   "album_id":-8,
+                                   "date":1590342681,
+                                   "id":457239022,
+                                   "owner_id":-192827874,
+                                   "has_tags":false,
+                                   "access_key":"55bd767dd4209f9c1e",
+                                   "height":1157,
+                                   "photo_1280":"https:\/\/sun9-29.userapi.com\/c858336\/v858336100\/1f7650\/-SaCtUpJLcI.jpg",
+                                   "photo_130":"https:\/\/sun9-46.userapi.com\/c858336\/v858336100\/1f764d\/zbjeN2_5ny0.jpg",
+                                   "photo_2560":"https:\/\/sun9-67.userapi.com\/c858336\/v858336100\/1f7651\/26VJRmbZGw4.jpg",
+                                   "photo_604":"https:\/\/sun9-24.userapi.com\/c858336\/v858336100\/1f764e\/vqUKPgqlXkc.jpg",
+                                   "photo_75":"https:\/\/sun9-45.userapi.com\/c858336\/v858336100\/1f764c\/GIcqz2vk0nk.jpg",
+                                   "photo_807":"https:\/\/sun9-8.userapi.com\/c858336\/v858336100\/1f764f\/dzmg6oYnHik.jpg",
+                                   "post_id":27,
+                                   "text":"",
+                             "user_id":100,
+                             "width":1125
+                               }
+                           }
+                       ],
+                       "comments":
+                       {
+                           "count":0
+                       }
+                   },
+                   "group_id":192827874,
+                   "event_id":"fb9e07ceb57000a3337c9af19097f8820a00e245"
+               }
+            ]
         }
-    ]
-    }"#;
+        "#;
         let parsed_response = parse_response(test_response).unwrap();
         match parsed_response {
             Response::Ok(resp) => assert!(!resp.posts.is_empty()),
