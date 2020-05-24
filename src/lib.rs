@@ -41,6 +41,6 @@ async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
         .unwrap();
 
     println!("{}", &res);
-    let (ts, posts) = lp_response::parse_response(&res).unwrap();
+    let parsed_response = lp_response::parse_response(&res).unwrap();
     String::new()
 }
