@@ -1,5 +1,10 @@
 use anyhow::{Context, Result};
 use serde_json::Value;
+use std::any::type_name;
+
+fn type_of<T>(_: T) -> &'static str {
+    type_name::<T>()
+}
 
 pub struct Post {
     text: String,
@@ -13,15 +18,17 @@ pub fn parse_response(response: &str) -> Result<(u64, Vec<Post>)> {
         .parse::<u64>()
         .context("Cannot transform timestemp to u64")?;
 
-    let updates = json_response["updates"].is_array();
+    let updates = json_response
+        .get("updates")
+        .context("No updates field in response")?
+        .as_array()
+        .context("Updates field has not contain an array")?;
+    let posts: Vec<Post> = vec![];
+    if updates.is_empty() {
+        return Ok((ts, posts));
+    }
 
-    dbg!(&updates);
-    Ok((
-        ts,
-        vec![Post {
-            text: "test".to_owned(),
-        }],
-    ))
+    Ok((ts, posts))
 }
 
 #[cfg(test)]
@@ -31,7 +38,7 @@ mod tests {
 
     #[test]
     fn get_ts() {
-        let test_response = r#"{"ts":"564", "updates":"nothing"}"#;
+        let test_response = r#"{"ts":"564", "updates":[]}"#;
         let (ts, _) = parse_response(test_response).unwrap();
         assert_eq!(ts, 564);
     }
@@ -98,6 +105,17 @@ mod tests {
     }"#;
         let (_, _) = parse_response(test_response).unwrap();
         assert_eq!(3, 3);
+    }
+
+    #[test]
+    fn empty_updates() {
+        let test_response = r#"{
+    "ts":"16",
+    "updates":
+    []
+    }"#;
+        let (_, updates) = parse_response(test_response).unwrap();
+        assert!(updates.is_empty());
     }
 
     #[test]
