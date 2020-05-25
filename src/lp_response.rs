@@ -7,8 +7,19 @@ fn type_of<T>(_: T) -> &'static str {
     type_name::<T>()
 }
 
+#[derive(Debug)]
 pub struct Post {
     text: String,
+    attach_link: String,
+}
+
+impl Post {
+    pub fn new(text: &str, attach_link: &str) -> Post {
+        Post {
+            text: text.to_owned(),
+            attach_link: attach_link.to_owned(),
+        }
+    }
 }
 
 pub struct Failure {
@@ -52,10 +63,10 @@ pub fn parse_response(response: &str) -> Result<Response> {
         .get("updates")
         .context("No updates field in response")?
         .as_array()
-        .context("Updates field has not contain an array")?;
-    let posts: Vec<Post> = vec![];
-    let parsed_response = Success::new(ts, posts);
+        .context("Updates field does not contain an array")?;
+    let mut posts = vec![];
     if updates.is_empty() {
+        let parsed_response = Success::new(ts, posts);
         return Ok(Response::Ok(parsed_response));
     }
 
@@ -63,10 +74,47 @@ pub fn parse_response(response: &str) -> Result<Response> {
         .get("object")
         .context("No object field in update")?;
 
-    let id = object.get("id").context("No id field in object")?;
-    let text = object.get("text").context("No text field in object")?;
+    let text = object
+        .get("text")
+        .context("No text field in object")?
+        .as_str()
+        .context("Text field is not a string")?;
+    let attachments = object
+        .get("attachments")
+        .context("No attachments field in object")?
+        .as_array()
+        .context("Attachment field does not contain an array")?;
 
-    dbg!(&text);
+    // The only supported attachment type is photo
+    let attach_type = "photo".to_owned();
+    for attach in attachments {
+        let attach_data = attach
+            .get(&attach_type)
+            .context("Attach type is not a photo!")?;
+
+        // Let`s find suitable photo-field
+        let mut attach_link = attach_data.get(&format!("{}{}", attach_type, "_1280"));
+        if attach_link.is_none() {
+            attach_link = attach_data.get(&format!("{}{}", attach_type, "_807"));
+            if attach_link.is_none() {
+                attach_link = attach_data.get(&format!("{}{}", attach_type, "_604"));
+                if attach_link.is_none() {
+                    continue;
+                }
+            }
+        }
+
+        let attach_link = attach_link
+            .context("No attach link")?
+            .as_str()
+            .context("Attach link is not a string O.o")?;
+
+        let post = Post::new(text, attach_link);
+        posts.push(post);
+    }
+
+    dbg!(&posts);
+    let parsed_response = Success::new(ts, posts);
     Ok(Response::Ok(parsed_response))
 }
 
@@ -75,25 +123,25 @@ mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
-    #[test]
-    fn failure() {
-        assert_eq!(3, 3);
-    }
+    //#[test]
+    //fn failure() {
+    //    assert_eq!(3, 3);
+    //}
 
-    #[test]
-    fn get_ts() {
-        let test_response = r#"{"ts":"564", "updates":[]}"#;
-        let parsed_response = parse_response(test_response).unwrap();
-        let ts = parsed_response.get_ts().unwrap();
-        assert_eq!(ts, 564);
-    }
+    //#[test]
+    //fn get_ts() {
+    //    let test_response = r#"{"ts":"564", "updates":[]}"#;
+    //    let parsed_response = parse_response(test_response).unwrap();
+    //    let ts = parsed_response.get_ts().unwrap();
+    //    assert_eq!(ts, 564);
+    //}
 
-    #[test]
-    fn bad_ts() {
-        let test_response = r#"{"ts":"", "updates":[]}"#;
-        let parsed_response = parse_response(test_response);
-        assert!(parsed_response.is_err());
-    }
+    //#[test]
+    //fn bad_ts() {
+    //    let test_response = r#"{"ts":"", "updates":[]}"#;
+    //    let parsed_response = parse_response(test_response);
+    //    assert!(parsed_response.is_err());
+    //}
 
     #[test]
     fn get_update() {
@@ -207,19 +255,19 @@ mod tests {
         }
     }
 
-    #[test]
-    fn empty_updates() {
-        let test_response = r#"{
-    "ts":"16",
-    "updates":
-    []
-    }"#;
-        let parsed_response = parse_response(test_response).unwrap();
-        match parsed_response {
-            Response::Ok(resp) => assert!(resp.posts.is_empty()),
-            Response::Err(_) => panic!("Wrong response parsing"),
-        }
-    }
+    //#[test]
+    //fn empty_updates() {
+    //    let test_response = r#"{
+    //"ts":"16",
+    //"updates":
+    //[]
+    //}"#;
+    //    let parsed_response = parse_response(test_response).unwrap();
+    //    match parsed_response {
+    //        Response::Ok(resp) => assert!(resp.posts.is_empty()),
+    //        Response::Err(_) => panic!("Wrong response parsing"),
+    //    }
+    //}
 
     //#[test]
     //fn bad_data() {

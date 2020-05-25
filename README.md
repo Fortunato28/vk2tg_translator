@@ -13,6 +13,6 @@ This is little project for self education. Required way:
 ## Required features:
 - [x] Capture vk_token from console environment
 - [x] Send prepare request
-- [ ] Send long-polling request
+- [x] Send long-polling request
 - [ ] Telegram bot functional
 - [ ] Expand posts data and information
