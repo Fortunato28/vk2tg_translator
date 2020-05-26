@@ -89,9 +89,16 @@ pub fn parse_response(response: &str) -> Result<Response> {
         // The only supported attachment type is photo
         let attach_type = "photo".to_owned();
         for attach in attachments {
-            let attach_data = attach
-                .get(&attach_type)
-                .context("Attach type is not a photo!")?;
+            let attach_data = attach.get(&attach_type);
+            //.context("Attach type is not a photo!")?;
+
+            // No attach data - okey, skip it
+            if attach_data.is_none() {
+                continue;
+            }
+
+            // Here attach data certanly is Some(value)
+            let attach_data = attach_data.unwrap();
 
             // Let`s find suitable photo-field
             let mut attach_link = attach_data.get(&format!("{}{}", attach_type, "_1280"));
