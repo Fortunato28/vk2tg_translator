@@ -90,7 +90,6 @@ pub fn parse_response(response: &str) -> Result<Response> {
         let attach_type = "photo".to_owned();
         for attach in attachments {
             let attach_data = attach.get(&attach_type);
-            //.context("Attach type is not a photo!")?;
 
             // No attach data - okey, skip it
             if attach_data.is_none() {
@@ -112,20 +111,16 @@ pub fn parse_response(response: &str) -> Result<Response> {
                 }
             }
 
-            let attach_link = attach_link
-                .context("No attach link")?
-                .as_str()
-                .context("Attach link is not a string O.o")?
-                .to_owned();
-
-            attach_links.push(attach_link);
+            // Here attach data certanly is Some(value)
+            if let Some(attach_link) = attach_link.unwrap().as_str() {
+                attach_links.push(attach_link.to_owned());
+            }
         }
 
         let post = Post::new(text, attach_links);
         posts.push(post);
     }
 
-    dbg!(&posts);
     let parsed_response = Success::new(ts, posts);
     Ok(Response::Ok(parsed_response))
 }
@@ -243,13 +238,20 @@ mod tests {
                                    "photo_1280":"https:\/\/sun9-29.userapi.com\/c858336\/v858336100\/1f7650\/-SaCtUpJLcI.jpg",
                                    "photo_130":"https:\/\/sun9-46.userapi.com\/c858336\/v858336100\/1f764d\/zbjeN2_5ny0.jpg",
                                    "photo_2560":"https:\/\/sun9-67.userapi.com\/c858336\/v858336100\/1f7651\/26VJRmbZGw4.jpg",
-                                   "photo_604":"https:\/\/sun9-24.userapi.com\/c858336\/v858336100\/1f764e\/vqUKPgqlXkc.jpg",
                                    "photo_75":"https:\/\/sun9-45.userapi.com\/c858336\/v858336100\/1f764c\/GIcqz2vk0nk.jpg",
                                    "photo_807":"https:\/\/sun9-8.userapi.com\/c858336\/v858336100\/1f764f\/dzmg6oYnHik.jpg",
                                    "post_id":27,
                                    "text":"",
                              "user_id":100,
                              "width":1125
+                               }
+                           },
+
+                           {
+                               "type":"photo",
+                               "photo":
+                               {
+                                   "photo_604":"https:\/\/sun9-24.userapi.com\/c858336\/v858336100\/1f764e\/vqUKPgqlXkc.jpg"
                                }
                            }
                        ],
@@ -266,7 +268,15 @@ mod tests {
         "#;
         let parsed_response = parse_response(test_response).unwrap();
         match parsed_response {
-            Response::Ok(resp) => assert!(resp.posts.len() == 2),
+            Response::Ok(resp) => {
+                assert_eq!(resp.posts[0].text, "ак сложилось,");
+                assert_eq!(resp.posts[0].attach_links.len(), 1);
+                assert_eq!(resp.posts[1].text, "аки шало");
+                assert_eq!(
+                    resp.posts[1].attach_links[1],
+                    r#"https://sun9-24.userapi.com/c858336/v858336100/1f764e/vqUKPgqlXkc.jpg"#
+                );
+            }
             Response::Err(_) => panic!("Wrong response parsing"),
         }
     }
