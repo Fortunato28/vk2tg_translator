@@ -10,14 +10,14 @@ fn type_of<T>(_: T) -> &'static str {
 #[derive(Debug)]
 pub struct Post {
     text: String,
-    attach_link: String,
+    attach_links: Vec<String>,
 }
 
 impl Post {
-    pub fn new(text: &str, attach_link: &str) -> Post {
+    pub fn new(text: &str, attach_links: Vec<String>) -> Post {
         Post {
             text: text.to_owned(),
-            attach_link: attach_link.to_owned(),
+            attach_links: attach_links,
         }
     }
 }
@@ -70,46 +70,51 @@ pub fn parse_response(response: &str) -> Result<Response> {
         return Ok(Response::Ok(parsed_response));
     }
 
-    let object = updates[0]
-        .get("object")
-        .context("No object field in update")?;
+    // Parse updates
+    for update in updates {
+        let object = update.get("object").context("No object field in update")?;
 
-    let text = object
-        .get("text")
-        .context("No text field in object")?
-        .as_str()
-        .context("Text field is not a string")?;
-    let attachments = object
-        .get("attachments")
-        .context("No attachments field in object")?
-        .as_array()
-        .context("Attachment field does not contain an array")?;
+        let text = object
+            .get("text")
+            .context("No text field in object")?
+            .as_str()
+            .context("Text field is not a string")?;
+        let attachments = object
+            .get("attachments")
+            .context("No attachments field in object")?
+            .as_array()
+            .context("Attachment field does not contain an array")?;
 
-    // The only supported attachment type is photo
-    let attach_type = "photo".to_owned();
-    for attach in attachments {
-        let attach_data = attach
-            .get(&attach_type)
-            .context("Attach type is not a photo!")?;
+        let mut attach_links = vec![];
+        // The only supported attachment type is photo
+        let attach_type = "photo".to_owned();
+        for attach in attachments {
+            let attach_data = attach
+                .get(&attach_type)
+                .context("Attach type is not a photo!")?;
 
-        // Let`s find suitable photo-field
-        let mut attach_link = attach_data.get(&format!("{}{}", attach_type, "_1280"));
-        if attach_link.is_none() {
-            attach_link = attach_data.get(&format!("{}{}", attach_type, "_807"));
+            // Let`s find suitable photo-field
+            let mut attach_link = attach_data.get(&format!("{}{}", attach_type, "_1280"));
             if attach_link.is_none() {
-                attach_link = attach_data.get(&format!("{}{}", attach_type, "_604"));
+                attach_link = attach_data.get(&format!("{}{}", attach_type, "_807"));
                 if attach_link.is_none() {
-                    continue;
+                    attach_link = attach_data.get(&format!("{}{}", attach_type, "_604"));
+                    if attach_link.is_none() {
+                        continue;
+                    }
                 }
             }
+
+            let attach_link = attach_link
+                .context("No attach link")?
+                .as_str()
+                .context("Attach link is not a string O.o")?
+                .to_owned();
+
+            attach_links.push(attach_link);
         }
 
-        let attach_link = attach_link
-            .context("No attach link")?
-            .as_str()
-            .context("Attach link is not a string O.o")?;
-
-        let post = Post::new(text, attach_link);
+        let post = Post::new(text, attach_links);
         posts.push(post);
     }
 
@@ -187,6 +192,10 @@ mod tests {
                                    "user_id":100,
                                    "width":1080
                                }
+                           },
+
+                           {
+                               "type":"photo"
                            }
                        ],
                        "comments":
@@ -250,7 +259,7 @@ mod tests {
         "#;
         let parsed_response = parse_response(test_response).unwrap();
         match parsed_response {
-            Response::Ok(resp) => assert!(!resp.posts.is_empty()),
+            Response::Ok(resp) => assert!(resp.posts.len() == 2),
             Response::Err(_) => panic!("Wrong response parsing"),
         }
     }
