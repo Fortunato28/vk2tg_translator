@@ -61,6 +61,17 @@ impl Response {
 
 pub fn parse_response(response: &str) -> Result<Response> {
     let json_response: Value = serde_json::from_str(&response)?;
+
+    let failure_code = json_response.get("failed");
+    if failure_code.is_some() {
+        let result_code = failure_code
+            .unwrap()
+            .as_u64()
+            .context("Something wrong with failure response")?;
+        let failure = Failure { code: result_code };
+        let parsed_response = Response::Err(failure);
+        return Ok(parsed_response);
+    }
     let ts = json_response["ts"]
         .as_str()
         .context("No timestemp in response")?
@@ -148,7 +159,13 @@ mod tests {
 
     #[test]
     fn failure() {
-        assert_eq!(3, 3);
+        let test_response = r#"{"failed":2}"#;
+        let parsed_response = parse_response(test_response).unwrap();
+
+        match parsed_response {
+            Response::Ok(_) => panic!("Wrong response parsing"),
+            Response::Err(resp) => assert_eq!(resp.code, 2),
+        }
     }
 
     #[test]
