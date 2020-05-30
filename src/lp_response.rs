@@ -331,7 +331,10 @@ mod tests {
     // Absolutely wrong string
     #[test]
     fn bad_data() {
-        assert_eq!(3, 3);
+        let test_response = r#"just some string"#;
+
+        let parsed_response = parse_response(test_response);
+        assert!(parsed_response.is_err());
     }
 
     #[test]

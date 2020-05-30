@@ -29,7 +29,7 @@ async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
 
     let result_request = format!(
         "{}{}&wait=30&mode=2&ts={}",
-        request, /*meta_data.key*/ "dfv", meta_data.ts
+        request, meta_data.key, meta_data.ts
     );
 
     println!("{}", &result_request);
