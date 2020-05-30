@@ -14,11 +14,19 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn new(text: &str, attach_links: Vec<String>) -> Post {
+    pub fn new() -> Post {
         Post {
-            text: text.to_owned(),
-            attach_links: attach_links,
+            text: String::new(),
+            attach_links: vec![],
         }
+    }
+
+    pub fn add_text(&mut self, text: &str) {
+        self.text = text.to_owned();
+    }
+
+    pub fn add_attach_link(&mut self, link: &str) {
+        self.attach_links.push(link.to_owned());
     }
 }
 
@@ -72,6 +80,7 @@ pub fn parse_response(response: &str) -> Result<Response> {
 
     // Parse updates
     for update in updates {
+        let mut post = Post::new();
         let object = update.get("object").context("No object field in update")?;
 
         let text = object
@@ -79,13 +88,21 @@ pub fn parse_response(response: &str) -> Result<Response> {
             .context("No text field in object")?
             .as_str()
             .context("Text field is not a string")?;
-        let attachments = object
-            .get("attachments")
-            .context("No attachments field in object")?
-            .as_array()
-            .context("Attachment field does not contain an array")?;
+        post.add_text(text);
 
-        let mut attach_links = vec![];
+        let attachments = object.get("attachments");
+        if attachments.is_none() {
+            posts.push(post);
+            continue;
+        }
+        // Here attachments data certanly is Some(value)
+        let attachments = attachments.unwrap().as_array();
+        if attachments.is_none() {
+            posts.push(post);
+            continue;
+        }
+        let attachments = attachments.unwrap();
+
         // The only supported attachment type is photo
         let attach_type = "photo".to_owned();
         for attach in attachments {
@@ -113,11 +130,10 @@ pub fn parse_response(response: &str) -> Result<Response> {
 
             // Here attach data certanly is Some(value)
             if let Some(attach_link) = attach_link.unwrap().as_str() {
-                attach_links.push(attach_link.to_owned());
+                post.add_attach_link(attach_link);
             }
         }
 
-        let post = Post::new(text, attach_links);
         posts.push(post);
     }
 
@@ -130,25 +146,25 @@ mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
-    //#[test]
-    //fn failure() {
-    //    assert_eq!(3, 3);
-    //}
+    #[test]
+    fn failure() {
+        assert_eq!(3, 3);
+    }
 
-    //#[test]
-    //fn get_ts() {
-    //    let test_response = r#"{"ts":"564", "updates":[]}"#;
-    //    let parsed_response = parse_response(test_response).unwrap();
-    //    let ts = parsed_response.get_ts().unwrap();
-    //    assert_eq!(ts, 564);
-    //}
+    #[test]
+    fn get_ts() {
+        let test_response = r#"{"ts":"564", "updates":[]}"#;
+        let parsed_response = parse_response(test_response).unwrap();
+        let ts = parsed_response.get_ts().unwrap();
+        assert_eq!(ts, 564);
+    }
 
-    //#[test]
-    //fn bad_ts() {
-    //    let test_response = r#"{"ts":"", "updates":[]}"#;
-    //    let parsed_response = parse_response(test_response);
-    //    assert!(parsed_response.is_err());
-    //}
+    #[test]
+    fn bad_ts() {
+        let test_response = r#"{"ts":"", "updates":[]}"#;
+        let parsed_response = parse_response(test_response);
+        assert!(parsed_response.is_err());
+    }
 
     #[test]
     fn get_update() {
@@ -281,22 +297,54 @@ mod tests {
         }
     }
 
-    //#[test]
-    //fn empty_updates() {
-    //    let test_response = r#"{
-    //"ts":"16",
-    //"updates":
-    //[]
-    //}"#;
-    //    let parsed_response = parse_response(test_response).unwrap();
-    //    match parsed_response {
-    //        Response::Ok(resp) => assert!(resp.posts.is_empty()),
-    //        Response::Err(_) => panic!("Wrong response parsing"),
-    //    }
-    //}
+    #[test]
+    fn empty_updates() {
+        let test_response = r#"{
+    "ts":"16",
+    "updates":
+    []
+    }"#;
+        let parsed_response = parse_response(test_response).unwrap();
+        match parsed_response {
+            Response::Ok(resp) => assert!(resp.posts.is_empty()),
+            Response::Err(_) => panic!("Wrong response parsing"),
+        }
+    }
 
-    //#[test]
-    //fn bad_data() {
-    //    assert_eq!(3, 3);
-    //}
+    // Absolutely wrong string
+    #[test]
+    fn bad_data() {
+        assert_eq!(3, 3);
+    }
+
+    #[test]
+    fn no_attachments() {
+        let test_response = r#"
+        {
+            "ts":"27",
+            "updates":
+            [
+               {
+                   "type":"wall_post_new",
+                   "object":
+                   {
+                       "text":"xbbb ,",
+                       "comments":
+                       {
+                           "count":0
+                       }
+                   },
+                   "group_id":192827874,
+                   "event_id":"b99ca8705ee2387e7e685b8868a32a9d2a8a05c5"
+               }
+            ]
+        }
+        "#;
+
+        let parsed_response = parse_response(test_response).unwrap();
+        match parsed_response {
+            Response::Ok(resp) => assert_eq!(resp.posts[0].text, "xbbb ,"),
+            Response::Err(_) => panic!("Wrong response parsing"),
+        }
+    }
 }
