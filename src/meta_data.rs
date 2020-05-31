@@ -10,6 +10,12 @@ pub struct MetaData {
     pub ts: String,
 }
 
+impl MetaData {
+    pub fn set_ts(&mut self, ts: String) {
+        self.ts = ts;
+    }
+}
+
 pub async fn get_meta_data(group: &group_data::Group) -> Result<MetaData> {
     let request = r#"https://api.vk.com/method/groups.getLongPollServer/?&v=5.103&group_id="#;
 

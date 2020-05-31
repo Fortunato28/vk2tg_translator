@@ -2,9 +2,28 @@ use anyhow::{Context, Result};
 use serde_json::Value;
 use std::any::type_name;
 
-// TODO delete
-fn type_of<T>(_: T) -> &'static str {
-    type_name::<T>()
+use crate::meta_data;
+
+pub async fn get_update(meta_data: &meta_data::MetaData) -> Result<Response> {
+    let response = perform_lp_request(meta_data).await;
+    parse_response(&response)
+}
+
+pub async fn perform_lp_request(meta_data: &meta_data::MetaData) -> String {
+    let request = r#"https://lp.vk.com/wh192827874?act=a_check&key="#;
+
+    let result_request = format!(
+        "{}{}&wait=30&mode=2&ts={}",
+        request, meta_data.key, meta_data.ts
+    );
+
+    let res = reqwest::get(&result_request)
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
+    res
 }
 
 #[derive(Debug)]
@@ -30,10 +49,12 @@ impl Post {
     }
 }
 
+#[derive(Debug)]
 pub struct Failure {
     pub code: u64,
 }
 
+#[derive(Debug)]
 pub struct Success {
     pub ts: u64,
     pub posts: Vec<Post>,
@@ -45,6 +66,7 @@ impl Success {
     }
 }
 
+#[derive(Debug)]
 pub enum Response {
     Err(Failure),
     Ok(Success),

@@ -5,11 +5,29 @@ mod group_data;
 mod lp_response;
 mod meta_data;
 
+use lp_response::Response;
+
 pub async fn run(source: &str, target_channel: &str, storage: &str) {
     //let new_posts = vec!["str1".to_owned(), "str2".to_owned()];
     let group = group_data::Group::new(source);
-    let meta_data = meta_data::get_meta_data(&group).await.unwrap();
-    let new_posts = perform_lp_request(meta_data).await;
+
+    'outer: loop {
+        let mut meta_data = meta_data::get_meta_data(&group).await.unwrap();
+        'inner: loop {
+            let update = lp_response::get_update(&meta_data).await.unwrap();
+            match update {
+                Response::Ok(resp) => {
+                    //send to telegram
+                    dbg!(&resp);
+                    meta_data.set_ts(resp.ts.to_string());
+                    continue 'inner;
+                }
+                Response::Err(_) => {
+                    continue 'outer;
+                }
+            }
+        }
+    }
 
     //let bot = Bot::from_env();
 
@@ -20,27 +38,4 @@ pub async fn run(source: &str, target_channel: &str, storage: &str) {
     //        .log_on_error()
     //        .await;
     //}
-}
-
-async fn perform_lp_request(meta_data: meta_data::MetaData) -> String {
-    dbg!(&meta_data);
-
-    let request = r#"https://lp.vk.com/wh192827874?act=a_check&key="#;
-
-    let result_request = format!(
-        "{}{}&wait=30&mode=2&ts={}",
-        request, meta_data.key, meta_data.ts
-    );
-
-    println!("{}", &result_request);
-    let res = reqwest::get(&result_request)
-        .await
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
-
-    println!("{}", &res);
-    let parsed_response = lp_response::parse_response(&res).unwrap();
-    String::new()
 }

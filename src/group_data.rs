@@ -23,7 +23,6 @@ impl Group {
     }
 
     fn extract_group_id(link: &str) -> Result<String> {
-        dbg!(&link);
         let mut id = String::new();
         for letter in link.chars() {
             if letter.is_digit(10) {
