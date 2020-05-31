@@ -10,7 +10,7 @@ use lp_response::Response;
 
 pub async fn run(source: &str, target_channel: &str, storage: &str) {
     let group = group_data::Group::new(source);
-    let article = telegraph::make_new_article();
+    let article = telegraph::Article::new(&lp_response::Post::new());
     dbg!(&article);
 
     //'outer: loop {
