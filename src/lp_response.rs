@@ -28,8 +28,8 @@ pub async fn perform_lp_request(meta_data: &meta_data::MetaData) -> String {
 
 #[derive(Debug)]
 pub struct Post {
-    text: String,
-    attach_links: Vec<String>,
+    pub text: String,
+    pub attach_links: Vec<String>,
 }
 
 impl Post {

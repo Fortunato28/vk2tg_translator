@@ -28,10 +28,6 @@ async fn main() {
     // TODO Has to be connected with group id
     let storage = "last_id_test";
 
-    loop {
-        dbg!(&"New hour, new iteration!");
-        v2t::run(source, target_channel, storage).await;
-
-        thread::sleep(time::Duration::from_secs(600));
-    }
+    dbg!(&"New hour, new iteration!");
+    v2t::run(source, target_channel, storage).await;
 }
