@@ -20,8 +20,8 @@ async fn main() {
     //let target_channel = cli.value_of("to").expect("No required [to] parameter");
     //let storage = cli.value_of("storage").unwrap_or("test_url_storage.txt");
 
-    //teloxide::enable_logging!();
-    //log::info!("Starting vk2tg_translator_bot!");
+    teloxide::enable_logging!();
+    log::info!("Starting vk2tg_translator_bot!");
 
     let source = "https://vk.com/club192827874";
     let target_channel = "@vk2tg_test_channel";

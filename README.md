@@ -14,5 +14,5 @@ This is little project for self education. Required way:
 - [x] Capture vk_token from console environment
 - [x] Send prepare request
 - [x] Send long-polling request
-- [ ] Telegram bot functional
-- [ ] Expand posts data and information
+- [x] Telegram bot functional
+- [ ] Use telegra.ph https://docs.rs/telegraph-rs/0.3.1/telegraph_rs/

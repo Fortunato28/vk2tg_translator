@@ -8,7 +8,6 @@ mod meta_data;
 use lp_response::Response;
 
 pub async fn run(source: &str, target_channel: &str, storage: &str) {
-    //let new_posts = vec!["str1".to_owned(), "str2".to_owned()];
     let group = group_data::Group::new(source);
 
     'outer: loop {
@@ -31,7 +30,6 @@ pub async fn run(source: &str, target_channel: &str, storage: &str) {
                         .await
                         .log_on_error()
                         .await;
-                        dbg!(&"It had to be sent");
                     }
 
                     dbg!(&resp);
